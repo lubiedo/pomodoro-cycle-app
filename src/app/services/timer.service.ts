@@ -27,8 +27,8 @@ export class TimerService implements OnDestroy {
   private value = 0;
   private counter = 0;
   private score = 0;
-  private timerStarted: boolean;
-  private timerPaused: boolean;
+  private timerStarted: boolean = false;
+  private timerPaused:  boolean = false;
   private timerSubscription: Subscription;
   private currentType: TimerTypeEnum = TimerTypeEnum.main;
   private audioSourcesEnum = AudioSourcesEnum;

@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, Menu, Tray } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-let win, serve;
+let win, serve, tray;
 const title = 'Pomodoro Cycle';
 const args  = process.argv.slice(1);
 const trayicon  = path.join(__dirname, '/tray.png')
@@ -44,7 +44,7 @@ function initMenu() {
 
 function initTray()
 {
-  const tray = new Tray(trayicon);
+  tray = new Tray(trayicon);
   const trayMenu = Menu.buildFromTemplate([
     { role: 'reload' },
     { type: 'separator' },
