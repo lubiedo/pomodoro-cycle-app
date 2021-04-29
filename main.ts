@@ -1,9 +1,11 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, Tray } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
 let win, serve;
-const args = process.argv.slice(1);
+const title = 'Pomodoro Cycle';
+const args  = process.argv.slice(1);
+const trayicon  = path.join(__dirname, '/tray.png')
 serve = args.some(val => val === '--serve');
 
 function initMenu() {
@@ -19,12 +21,13 @@ function initMenu() {
         { role: 'hide' },
         { role: 'quit' },
         { type: 'separator' },
-        { label: 'Pomodoro Cycle', accelerator: 'Cmd+O', click: () => win.show() }
+        { label: title, accelerator: 'Cmd+O', click: () => win.show() }
       ]
     },
     {
       role: 'help',
       submenu: [
+        { role: 'toggleDevTools' },
         {
           label: 'Learn More',
           click() {
@@ -39,36 +42,47 @@ function initMenu() {
   Menu.setApplicationMenu(menu);
 }
 
-function createWindow() {
-  // const electronScreen = screen;
-  // const size = electronScreen.getPrimaryDisplay().workAreaSize;
+function initTray()
+{
+  const tray = new Tray(trayicon);
+  const trayMenu = Menu.buildFromTemplate([
+    { role: 'reload' },
+    { type: 'separator' },
+    {
+      role: 'window',
+      submenu: [
+        { label: 'Show', click: () => win.show() },
+        { role: 'minimize' },
+        { role: 'hide' },
+        { role: 'quit' },
+      ]
+    },
+    { type: 'separator' },
+    { role: 'about' },
+  ])
+  tray.setContextMenu(trayMenu);
+}
 
+function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    x: 0,
-    y: 0,
-    // width: size.width,
-    // height: size.height,
-    width: 400,
-    height: 500,
+    x: 5,
+    y: 15,
+    width: 300,
+    height: 400,
     resizable: false,
-    titleBarStyle: 'hidden',
     fullscreen: false,
+    frame: false,
+    transparent: true,
     webPreferences: {
       nodeIntegration: true
     },
-    // icon: __dirname + '/src/favicon.png',
     show: false
   });
 
   win.once('ready-to-show', () => {
     win.show();
   });
-
-  // const tray = new Tray(path.join(__dirname, 'tray-icon.png'));
-
-  // tray.setHighlightMode('always');
-  // tray.setTitle('Test title');
 
   if (serve) {
     require('electron-reload')(__dirname, {
@@ -116,10 +130,11 @@ function createWindow() {
     });
   }
   initMenu();
+  initTray();
 }
 
 try {
-  app.setName('Pomodoro Cycle');
+  app.setName(title);
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.

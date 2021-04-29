@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AppConfig } from '../environments/environment';
 import { ElectronService } from './services/electron.service';
+import { TimerService } from './services/timer.service';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,7 @@ import { ElectronService } from './services/electron.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(public electronService: ElectronService, private translate: TranslateService) {
+  constructor(public electronService: ElectronService, public timerService: TimerService, private translate: TranslateService) {
     translate.setDefaultLang('en');
     console.log('AppConfig', AppConfig);
 
@@ -20,5 +21,13 @@ export class AppComponent {
     } else {
       console.log('Mode web');
     }
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (event.type != "keyup" || event.keyCode != 32)
+      return
+
+    this.timerService.toggleStart();
   }
 }
